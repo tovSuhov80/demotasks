@@ -1,15 +1,11 @@
 include .env
-DOCKER_COMPOSE?=docker-compose
+DOCKER_COMPOSE?=docker-compose -f $(DOCKER_COMPOSE_FILE)
 RUN=$(DOCKER_COMPOSE) run --rm php
 EXEC?=docker exec -it $(PROJECT)-php
 COMPOSER=$(EXEC) composer
 DB_WAIT=$(EXEC) php -r "echo \"Waiting for db...\n\";sleep(5);"
 
-
-env:
-	@test -f .env || cp .env.example .env
-
-install: env start wait-for-db composer-install
+install: start wait-for-db composer-install
 	$(RUN) yii migrate/up --interactive=0
 
 composer-install:

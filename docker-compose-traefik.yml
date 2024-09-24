@@ -3,6 +3,8 @@ version: '3'
 networks:
   default:
     driver: bridge
+  web:
+    external: true
 
 services:
   php:
@@ -14,8 +16,13 @@ services:
       - ./docker/apache/000-default.conf:/etc/apache2/sites-available/000-default.conf
     ports:
       - "${APP_PORT}:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${PROJECT}.rule=Host(`${DOCKER_DOMAIN}`)"
+      - "traefik.http.services.${PROJECT}.loadbalancer.server.port=80"
     networks:
       - default
+      - web
     depends_on:
       - db
 
@@ -42,6 +49,12 @@ services:
     container_name: ${PROJECT}-pma
     ports:
       - "${PMA_PORT}:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pma_${PROJECT}.rule=Host(`${PMA_DOMAIN}`)"
+    networks:
+      - default
+      - web
     environment:
       - PMA_ARBITRARY=1
       - PMA_HOST=db
