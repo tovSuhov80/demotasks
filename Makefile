@@ -24,7 +24,7 @@ uninstall:
 	$(DOCKER_COMPOSE) down --rmi local
 
 migrate:
-	$(RUN) yii migrate
+	@$(RUN) yii migrate
 
 migrate-down:
 	$(RUN) yii migrate/down
